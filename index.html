@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    .inactive {
+      display: none;
+    }
+  </style>
+</head>
+<html>
+  <body>
+    <div id="unavailable" class="inactive">
+      <h1>Your browser don't support <string>webkitSpeechRecognition</string> which we need.</h1>
+    </div>
+    <div id="main">
+      <div class="toolbar">
+        <input id="input-text" name="" oninput="inputTextUpdated(event)" />
+        <button id="start-record-btn" onclick="startRecordClicked(event)">Start Record</button>
+        <button id="end-record-btn" class="inactive" onclick="endRecordClicked(event)">End Record</button>
+        <button onclick="resetClicked(event)">Reset</button>
+      </div>
+      <div id="result">
+      </div>
+      <script id="result-template" type="text/template">
+        <h1>{{groupName}}</h1>
+        <div id="group-meber"></div>
+      </script>
+      <script id="group-meber-template" type="text/template">
+        <span>{{name}}</span>
+      </script>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

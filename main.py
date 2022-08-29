@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-homeHTML = open('./index.html', 'r').read()
+homeHTML = open("./index.html", "r").read()
 
 @app.get("/")
 def home():

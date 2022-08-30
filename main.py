@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 from pypinyin import pinyin, lazy_pinyin, Style
-from sqlalchemy import create_engine, Column, String, Integer, or_, func
+from sqlalchemy import create_engine, Column, String, Integer, or_, func, literal_column
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 
@@ -57,27 +57,36 @@ class SearchResp(BaseModel):
     group_name: str
     name: str
     name_pinyin: str
+    hits: int
     score: float
 
 @app.post("/search", response_model=list[SearchResp])
 def search(input: SearchReq, db: Session = Depends(get_db)):
     size = len(input.text)
-    pinyin_conditions = map(
+    keywords = list(map(quote, flatten(pinyin(input.text, style=Style.NORMAL))))
+    pinyin_conditions = list(map(
         lambda quote_str: Member.name_pinyin.like(f"%{quote_str}%"),
-        map(quote, flatten(pinyin(input.text, style=Style.NORMAL)))
-    )
-    group_count = func.count(Member.group_name)
-    result = db.query(Member, group_count).filter(or_(*list(pinyin_conditions))).group_by(Member.group_name).all()
+        keywords
+    ))
+    hits = "(" + "+".join(
+        map(
+            lambda quote_str: f"(members.name_pinyin LIKE '%{quote_str}%')",
+            keywords
+        )
+    ) + ")"
+    score = f"({hits} / CAST(word_count AS FLOAT)) AS score"
+
+    result = db.query(Member, literal_column(hits), literal_column(score)).filter(or_(*pinyin_conditions)).group_by(Member.name).order_by(literal_column("score").desc()).all()
 
     resp = list()
     for record in result:
-        print(record[1])
         resp.append(
             SearchResp(
                 group_name=record[0].group_name,
                 name=record[0].name,
                 name_pinyin=record[0].name_pinyin,
-                score=size/record[0].word_count
+                hits=record[1],
+                score=record[2],
             )
         )
     return resp
@@ -95,8 +104,9 @@ def source(input: list[Group], db: Session = Depends(get_db)):
     
     for group in input:
         for member in group.members:
-            name_pinyin = "".join(map(quote, flatten(pinyin(member, style=Style.NORMAL))))
-            new_member = Member(group_name=group.name, name=member, name_pinyin=name_pinyin, word_count=len(member))
+            clean_name = member.translate({ord(c): "" for c in "!@#$%^&*()[]{};:,./<>?\|`~-=_+"})
+            name_pinyin = "".join(map(quote, flatten(pinyin(clean_name, style=Style.NORMAL))))
+            new_member = Member(group_name=group.name, name=clean_name, name_pinyin=name_pinyin, word_count=len(clean_name))
             db.add(new_member)
             db.commit()
             db.refresh(new_member)

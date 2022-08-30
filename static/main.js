@@ -52,8 +52,30 @@ function recognitionOnResult (event) {
   inputTextUpdated({ target: { value: finalTranscript || interimTranscript } })
 }
 
-const inputTextUpdated = _.debounce((event) => {
-  console.log(event.target.value)
+const inputTextUpdated = _.debounce(async (event) => {
+  const hits = await fetch('/search', {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    method: 'POST',
+    body: JSON.stringify({ text: event.target.value }),
+  }).then((resp) => resp.json())
+
+  const groupTemplate = document.querySelector('#result-template')
+
+  const groups = hits.map((hit) => {
+    const dom = document.createElement(groupTemplate.dataset.tagname || 'div')
+    dom.classList.add(...groupTemplate.classList)
+    dom.innerHTML = groupTemplate.innerHTML
+      .replace(/\{\{groupName\}\}/g, hit.group_name)
+      .replace(/\{\{name\}\}/g, hit.name)
+      .replace(/\{\{score\}\}/g, hit.score)
+    return dom
+  })
+
+  const resultSection = document.querySelector('#result')
+  resultSection.innerHTML = ''
+  resultSection.append(...groups)
 }, 750)
 
 function startRecordClicked() {

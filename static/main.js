@@ -119,7 +119,18 @@ function endRecordClicked() {
 }
 
 function resetClicked() {
-  
+  const recogintion = GetOrInitSpeechRecognintion()
+
+  recogintion.stop()
+
+  document.querySelector('#input-text').value = ''
+
+  document.querySelector('#start-record-btn').classList.remove('inactive')
+  document.querySelector('#end-record-btn').classList.add('inactive')
+  document.querySelector('#start-hint').classList.remove('inactive')
+  document.querySelector('#search-table').classList.add('inactive')
+  document.querySelector('#no-result-hint').classList.add('inactive')
+  document.querySelector('#loading-spinner').classList.add('inactive')
 }
 
 function main() {

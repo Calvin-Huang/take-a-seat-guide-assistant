@@ -1,0 +1,10 @@
+build_image:
+  image: docker:stable
+  stage: build
+  services:
+    - docker:stable-dind
+  script:
+    - docker build -f ./Dockerfile -t $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+  only:
+    - /^\d+\.\d+\.\d+(-\w+(\.\d+)?)?$/

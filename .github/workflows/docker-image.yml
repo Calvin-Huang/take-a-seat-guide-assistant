@@ -26,4 +26,4 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: ${{ steps.vars.outputs.tag }}
+        tags: ${{ secrets.DOCKER_USERNAME }}/take-a-seat-guide-assistant:${{ steps.vars.outputs.tag }}

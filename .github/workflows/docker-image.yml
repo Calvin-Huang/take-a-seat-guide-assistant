@@ -26,4 +26,4 @@ jobs:
     - name: Build the Docker image
       env:
         RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
-      run: docker build . --file Dockerfile --tag $secrets.DOCKERHUB_USERNAME:$RELEASE_VERSION
+      run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}:$RELEASE_VERSION

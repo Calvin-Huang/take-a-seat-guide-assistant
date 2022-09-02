@@ -27,3 +27,7 @@ jobs:
       env:
         RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
       run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}:$RELEASE_VERSION
+    - name: Push the Docker image
+      env:
+        RELEASE_VERSION: ${{ steps.vars.outputs.tag }}
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}:$RELEASE_VERSION

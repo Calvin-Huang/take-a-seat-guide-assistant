@@ -53,29 +53,51 @@ function recognitionOnResult (event) {
 }
 
 const inputTextUpdated = _.debounce(async (event) => {
-  const hits = await fetch('/search', {
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    method: 'POST',
-    body: JSON.stringify({ text: event.target.value }),
-  }).then((resp) => resp.json())
+  if (!event.target.value) {
+    return
+  }
 
-  const groupTemplate = document.querySelector('#result-template')
+  document.querySelector('#start-hint').classList.add('inactive')
+  document.querySelector('#search-table').classList.add('inactive')
+  document.querySelector('#no-result-hint').classList.add('inactive')
+  document.querySelector('#loading-spinner').classList.remove('inactive')
 
-  const groups = hits.map((hit) => {
-    const dom = document.createElement(groupTemplate.dataset.tagname || 'div')
-    dom.classList.add(...groupTemplate.classList)
-    dom.innerHTML = groupTemplate.innerHTML
-      .replace(/\{\{groupName\}\}/g, hit.group_name)
-      .replace(/\{\{name\}\}/g, hit.name)
-      .replace(/\{\{score\}\}/g, hit.score)
-    return dom
-  })
+  try {
+    const hits = await fetch('/search', {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify({ text: event.target.value }),
+    }).then((resp) => resp.json())
 
-  const resultSection = document.querySelector('#result')
-  resultSection.innerHTML = ''
-  resultSection.append(...groups)
+    const groupTemplate = document.querySelector('#result-template')
+
+    const groups = hits.map((hit) => {
+      const dom = document.createElement(groupTemplate.dataset.tagname || 'div')
+      dom.classList.add(...groupTemplate.classList)
+      dom.innerHTML = groupTemplate.innerHTML
+        .replace(/\{\{groupName\}\}/g, hit.group_name)
+        .replace(/\{\{name\}\}/g, hit.name)
+        .replace(/\{\{score\}\}/g, hit.score)
+      return dom
+    })
+
+    if (groups.length === 0) {
+      document.querySelector('#no-result-hint').classList.remove('inactive')
+    } else {
+      const resultSection = document.querySelector('#result')
+      resultSection.innerHTML = ''
+      resultSection.append(...groups)
+
+      document.querySelector('#search-table').classList.remove('inactive')
+    }
+  } catch (error) {
+    window.alert(`API 錯誤，查詢失敗 (${error})`)
+    document.querySelector('#start-hint').classList.remove('inactive')
+  }
+
+  document.querySelector('#loading-spinner').classList.add('inactive')
 }, 750)
 
 function startRecordClicked() {
@@ -103,6 +125,7 @@ function resetClicked() {
 function main() {
   if (!('webkitSpeechRecognition' in window)) {
     document.querySelector('#unavailable').classList.remove('inactive')
+    document.querySelector('#start-record-btn').setAttribute('disabled', '')
     return
   }
 }

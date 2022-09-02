@@ -86,7 +86,7 @@ def search(input: SearchReq, db: Session = Depends(get_db)):
                 name=record[0].name,
                 name_pinyin=record[0].name_pinyin,
                 hits=record[1],
-                score=record[2],
+                score="{:.2f}".format(record[2]),
             )
         )
     return resp

@@ -1,6 +1,7 @@
 from curses import echo
 from operator import or_
 from os import getenv
+from time import time
 from fastapi import FastAPI, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -10,6 +11,7 @@ from sqlalchemy import create_engine, Column, String, Integer, or_, func, litera
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 
+BUILD_TIME = getenv("BUILD_TIME")
 SQLALCHEMY_DATABASE_URL = getenv("SQLALCHEMY_DATABASE_URL") or "sqlite:///./sql_app.db"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}, echo=True,
@@ -40,6 +42,9 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 homeHTML = open("./index.html", "r").read()
 
+if BUILD_TIME != None:
+    homeHTML = homeHTML.replace("/static/main.js", f'/static/main.js?{BUILD_TIME}')
+
 def flatten(l):
     return [item for sublist in l for item in sublist]
     
@@ -48,7 +53,10 @@ def quote(content):
 
 @app.get("/")
 def home():
-    return HTMLResponse(homeHTML)
+    renderHTML = homeHTML
+    if BUILD_TIME == None:
+        renderHTML = renderHTML.replace("/static/main.js", f'/static/main.js?{time()}')
+    return HTMLResponse(renderHTML)
 
 class SearchReq(BaseModel):
     text: str

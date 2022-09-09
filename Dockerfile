@@ -16,6 +16,8 @@ RUN pip install pipenv && pipenv install --dev --system --deploy
 WORKDIR /app
 COPY . /app
 
+ENV BUILD_TIME=$BUILD_TIME
+
 EXPOSE 8000
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]

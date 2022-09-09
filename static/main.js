@@ -99,6 +99,8 @@ const inputTextUpdated = _.debounce(async (event) => {
   }
 
   document.querySelector('#loading-spinner').classList.add('inactive')
+  endRecordClicked()
+
   currentValue = event.target.value
 }, 1000)
 

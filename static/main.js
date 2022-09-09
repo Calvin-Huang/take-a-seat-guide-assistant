@@ -52,8 +52,9 @@ function recognitionOnResult (event) {
   inputTextUpdated({ target: { value: finalTranscript || interimTranscript } })
 }
 
+let currentValue = ''
 const inputTextUpdated = _.debounce(async (event) => {
-  if (!event.target.value) {
+  if (!event.target.value || currentValue === event.target.value) {
     return
   }
 
@@ -98,7 +99,8 @@ const inputTextUpdated = _.debounce(async (event) => {
   }
 
   document.querySelector('#loading-spinner').classList.add('inactive')
-}, 750)
+  currentValue = event.target.value
+}, 1000)
 
 function startRecordClicked() {
   const recogintion = GetOrInitSpeechRecognintion()

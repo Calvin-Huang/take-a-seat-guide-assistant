@@ -33,6 +33,8 @@ Online demo: [https://takeaseat.capslock.tw](https://takeaseat.capslock.tw)
 
 [Demo video](demo.mp4)
 
+https://raw.githubusercontent.com/Calvin-Huang/take-a-seat-guide-assistant/main/demo.mp4
+
 ----
 
 ## 使用情境

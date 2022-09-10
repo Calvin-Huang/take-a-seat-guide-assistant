@@ -23,7 +23,7 @@ $docker run mtpeak/take-a-seat-guide-assistant:1.0.3
 $curl localhost:8000
 ```
 
-**當沒建立過賓客名單時** (已經建立過名單變無法重新建立/修改)
+**當沒建立過賓客名單時，輸入名單** (已經建立過名單變無法重新建立/修改)
 ```
 $curl -XPOST -H 'Content-Type: application/json' "http://localhost:8000/source" -d '[{ "name": "桌號 1", members: ["阿方", "小明", "阿漢"] }]'
 ```

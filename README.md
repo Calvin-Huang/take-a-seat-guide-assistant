@@ -23,7 +23,7 @@ $docker run mtpeak/take-a-seat-guide-assistant:1.0.3
 $curl localhost:8000
 ```
 
-**當沒建立過賓客名單時，輸入名單** (已經建立過名單變無法重新建立/修改)
+**當沒建立過賓客名單時，輸入名單** (已經建立過名單變無法重新建立/修改) - 格式請見 [名單 example](source.json.example)
 ```
 $curl -XPOST -H 'Content-Type: application/json' "http://localhost:8000/source" -d '[{ "name": "桌號 1", members: ["阿方", "小明", "阿漢"] }]'
 ```
@@ -51,3 +51,10 @@ $curl -XPOST -H 'Content-Type: application/json' "http://localhost:8000/source" 
 
 ## Note
 目前使用上需要自行部署在獨立的 host 上，尚未知專案的使用度為何，如果有其他人敲碗想要可以在同一個 host 下管理 - 不需自立門戶準備環境再來擴充功能。
+
+---
+
+## Other resources
+- 邀約/確認賓客名單用的 Google Form 參考
+  - https://docs.google.com/forms/d/1_6MkX3YNV2pwer0Q0n5TuSh5VxHQs0fWoZ3fC7pPbVg/prefill (全部問題展開)
+  - https://docs.google.com/forms/d/1_6MkX3YNV2pwer0Q0n5TuSh5VxHQs0fWoZ3fC7pPbVg/edit?usp=sharing (可以直接複製，請不要修改原始內容)
